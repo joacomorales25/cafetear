@@ -124,3 +124,39 @@ GROUP BY DATENAME(WEEKDAY, fecha), DATEPART(WEEKDAY, fecha)
 ORDER BY DATEPART(WEEKDAY, fecha)
 
 
+/*
+
+Lotes cuya calificación promedio del último mes es menor al anterior
+
+*/
+
+SELECT
+    l.IDLote,
+    l.nombre               AS Lote,
+    AVG(cf.puntaje * 1.0)  AS PromedioUltimoMes,
+    (
+
+        SELECT AVG(cf2.puntaje * 1.0)
+        FROM Calibracion  c2
+        JOIN Calificacion cf2 ON cf2.IDCalibracion = c2.IDCalibracion
+        WHERE c2.IDLote = l.IDLote
+          AND cf2.fecha >= DATEADD(MONTH, DATEDIFF(MONTH, 0, GETDATE()) - 2, 0)
+          AND cf2.fecha <  DATEADD(MONTH, DATEDIFF(MONTH, 0, GETDATE()) - 1, 0)
+    )                      AS PromedioMesAnterior,
+    COUNT(*)               AS CalificacionesUltimoMes
+FROM Lote l
+JOIN Calibracion  c  ON c.IDLote         = l.IDLote
+JOIN Calificacion cf ON cf.IDCalibracion = c.IDCalibracion
+WHERE cf.fecha >= DATEADD(MONTH, DATEDIFF(MONTH, 0, GETDATE()) - 1, 0)  
+  AND cf.fecha <  DATEADD(MONTH, DATEDIFF(MONTH, 0, GETDATE()), 0)   
+GROUP BY l.IDLote, l.nombre
+HAVING AVG(cf.puntaje * 1.0) < (
+
+    SELECT AVG(cf2.puntaje * 1.0)
+    FROM Calibracion  c2
+    JOIN Calificacion cf2 ON cf2.IDCalibracion = c2.IDCalibracion
+    WHERE c2.IDLote = l.IDLote
+      AND cf2.fecha >= DATEADD(MONTH, DATEDIFF(MONTH, 0, GETDATE()) - 2, 0)
+      AND cf2.fecha <  DATEADD(MONTH, DATEDIFF(MONTH, 0, GETDATE()) - 1, 0)
+)
+ORDER BY PromedioUltimoMes;
