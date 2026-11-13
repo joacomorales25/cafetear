@@ -1,8 +1,8 @@
 CONSULTAS DE CAFETEAR - QUÉ MUESTRA CADA UNA
 ============================================================
 Las consultas están en queries/02_consultas.sql, sin comentarios, separadas por GO y en el mismo orden que la numeración de acá.
-Para cada una: la pregunta (comentario original), qué data muestra, para qué sirve y un ejemplo real de resultado.
-Los resultados de ejemplo salen de la base cargada con queries/01_instalador.sql. Las consultas 6 y 8 dependen de la fecha de hoy.
+Para cada una: la pregunta (en las consultas 1 a 10, el comentario original), qué data muestra, para qué sirve y un ejemplo real de resultado.
+Los resultados de ejemplo salen de la base cargada con queries/01_instalador.sql. Las consultas 6 y 8 dependen de la fecha de hoy. La consulta 11 usa la vista vwPuntajePorCalibracion y la función fnRelacionExtraccion.
 
 ------------------------------------------------------------
 CONSULTA 1: Lotes de café que dejan mal parada la calidad.
@@ -202,3 +202,22 @@ Ejemplo (primeras filas):
   26 | 4.05 | 21 | 5
   29 | 3.83 | 53 | 11
   27 | 3.76 | 17 | 5
+
+------------------------------------------------------------
+CONSULTA 11: Qué hace distinto el mejor barista.
+------------------------------------------------------------
+Pregunta:
+  11) Cómo calibra el mejor barista de 2026 comparado con el resto: dosis, tiempo y relación de extracción.
+
+Qué muestra:
+  Elige como mejor barista de 2026 al de mayor puntaje promedio con al menos 20 calificaciones (Lucas Benítez), usando la vista vwPuntajePorCalibracion, y compara sus calibraciones con las del resto: cantidad, dosis promedio, tiempo de extracción promedio y relación de extracción (con fnRelacionExtraccion).
+
+Para qué sirve:
+  Sirve para ver qué receta usa quien obtiene mejores calificaciones: usa algo menos de café (18,1 g contra 18,7 g) y extrae más tiempo (29,7 s contra 27,1 s), con la misma relación de extracción (1,94). Coincide con la consulta 10, donde los mejores tiempos rondan los 26 a 30 segundos.
+
+Filas que devuelve: 2
+Columnas: grupo | calibraciones | dosisPromedio | tiempoPromedio | relacionPromedio
+
+Ejemplo (primeras filas):
+  mejor barista | 22 | 18.127272 | 29.681818 | 1.941818
+  resto | 105 | 18.729523 | 27.085714 | 1.936857

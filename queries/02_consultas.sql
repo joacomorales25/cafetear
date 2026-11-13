@@ -143,3 +143,23 @@ GROUP BY c.tiempoExtraccion
 HAVING COUNT(*) >= 5
 ORDER BY puntajePromedio DESC, cantidadCalificaciones DESC;
 GO
+
+SELECT grupo,
+       COUNT(*) AS calibraciones,
+       AVG(dosis) AS dosisPromedio,
+       AVG(tiempoExtraccion * 1.0) AS tiempoPromedio,
+       AVG(dbo.fnRelacionExtraccion(dosis, rendimiento)) AS relacionPromedio
+FROM (SELECT CASE WHEN idBarista = (SELECT TOP 1 idBarista
+                                    FROM vwPuntajePorCalibracion
+                                    WHERE fechaCalibracion >= '2026-01-01'
+                                      AND fechaCalibracion < '2026-11-01'
+                                    GROUP BY idBarista
+                                    HAVING SUM(calificaciones) >= 20
+                                    ORDER BY SUM(sumaPuntajes) * 1.0 / SUM(calificaciones) DESC)
+                  THEN 'mejor barista' ELSE 'resto' END AS grupo,
+             dosis, tiempoExtraccion, rendimiento
+      FROM Calibracion
+      WHERE fechaCalibracion >= '2026-01-01'
+        AND fechaCalibracion < '2026-11-01') c
+GROUP BY grupo;
+GO
