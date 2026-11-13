@@ -1,3 +1,6 @@
 # Sistema operativo y editores
 .DS_Store
 *.swp
+
+# Comentarios extraídos de los scripts SQL
+comentarios_sql.txt

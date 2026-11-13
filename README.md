@@ -1,41 +1,32 @@
 # Cafetear · Base de datos
 
-Base de datos **SQL Server** de una cafetería de especialidad: registra las calibraciones de la máquina de espresso y la opinión de los clientes sobre cada café. Tiene 7 tablas, datos de ejemplo y los objetos que pide la consigna: **función, vistas, procedimientos y triggers**, además de índices y roles. Todo está en archivos `.sql`: no hace falta instalar nada más que SQL Server y SSMS (o Azure Data Studio).
+Base de datos **SQL Server** de una cafetería de especialidad: registra las calibraciones de la máquina de espresso y la opinión de los clientes sobre cada café. Tiene 7 tablas, datos de ejemplo y los objetos que pide la consigna: **función, vistas, procedimientos y triggers**, además de índices y roles. Todo está en tres archivos `.sql`: no hace falta instalar nada más que SQL Server y SSMS (o Azure Data Studio).
 
 ## Cómo cargarlo
 
 Sirve cualquier SQL Server de 2016 SP1 en adelante (Express, Developer o Standard).
 
 1. Conectate a tu servidor en SSMS o Azure Data Studio.
-2. Abrí `queries/instalador/Cafetear_completo.sql` y ejecutalo completo (F5). Es el único punto de instalación: crea la base `cafetear`, carga los datos y crea todos los objetos.
+2. Abrí `queries/01_instalador.sql` y ejecutalo completo (F5). Es el único punto de instalación: crea la base `cafetear`, carga los datos y crea todos los objetos.
 3. Al final **verifica la carga**: muestra una tabla de controles (filas de cada tabla y cantidad de objetos: 10 proveedores, 10 granos, 40 lotes, 10 baristas, 60 clientes, 225 calibraciones, 346 calificaciones, 3 procedimientos, 2 vistas, 1 función, 2 triggers y 3 índices) con `OK` en cada línea y el mensaje `OK: la base cafetear se cargó correctamente.` Si algo no coincide, esa línea dice `ERROR` y el script termina con un error.
-4. Abrí `queries/consultas/Queries.sql` y ejecutalo: devuelve un resultado por cada una de las 10 consultas. También se puede seleccionar una sola y ejecutarla.
-5. Para probar el comportamiento (errores, triggers y permisos), ejecutá `queries/pruebas/probar_todo.sql`: cada línea tiene que decir `OK` y no deja datos.
+4. Abrí `queries/02_consultas.sql` y ejecutalo: devuelve un resultado por cada una de las 10 consultas, que están separadas por `GO` y en el orden de `explicacion_consultas.txt`. También se puede seleccionar una sola y ejecutarla.
+5. Para probar el comportamiento (errores, triggers y permisos) y generar el respaldo, ejecutá `queries/03_pruebas.sql`: cada línea tiene que decir `OK` y no deja datos.
 
 Es seguro volver a correr la carga: borra y recrea las tablas de `cafetear` y deja siempre los mismos datos.
 
-Cada archivo `.sql` empieza con `USE cafetear;`, así que siempre trabaja sobre la base correcta.
+Cada archivo `.sql` empieza con `USE cafetear;` (el instalador la crea primero), así que siempre trabaja sobre la base correcta.
 
 ## Qué hay en la carpeta `queries`
 
-| Carpeta | Qué hay |
+| Archivo | Qué hay |
 |---|---|
-| `instalador/` | `Cafetear_completo.sql`: todo en un solo archivo, en orden, con la verificación al final |
-| `tablas/` | `01_crear_base_y_tablas.sql`: la base, las 7 tablas y los 3 índices |
-| `datos/` | Los datos de ejemplo (de junio de 2025 a octubre de 2026) |
-| `funciones/` | `fnRelacionExtraccion` |
-| `vistas/` | `vwPuntajePorCalibracion` (usa la función y la reutilizan la otra vista y el ranking) y `vwMejorCalibracionPorGrano` |
-| `procedimientos/` | `uspCalibracionCrear`, `uspCalificacionCrear` y `uspRankingBaristas` |
-| `triggers/` | `trgCalificacionControl` (puntaje de 1 a 5, no anterior a la calibración, una por cliente) y `trgCalificacionAsignarCalibracion` (asigna la calibración más próxima) |
-| `seguridad/` | `roles.sql`: los 2 roles, barista (registra calibraciones y calificaciones) y dueños (ven todo y ejecutan todo). `respaldo.sql`: copia de seguridad y su verificación |
-| `consultas/` | `Queries.sql`: las 10 consultas del equipo, sin comentarios y separadas por su número. `explicacion_consultas.txt`: qué datos muestra cada una, para qué sirve y un ejemplo de resultado |
-| `pruebas/` | `probar_todo.sql`: prueba todo, incluidos los errores. `verificar_carga.sql`: comprueba que la carga quedó completa (la ejecuta el instalador al final) |
+| `01_instalador.sql` | La base, las 7 tablas y los 3 índices; los datos de ejemplo (de junio de 2025 a octubre de 2026); la función `fnRelacionExtraccion`; las vistas `vwPuntajePorCalibracion` y `vwMejorCalibracionPorGrano`; los procedimientos `uspCalibracionCrear`, `uspCalificacionCrear` y `uspRankingBaristas`; los triggers `trgCalificacionControl` y `trgCalificacionAsignarCalibracion`; los roles `rolBarista` y `rolDuenio`; y la verificación de la carga |
+| `02_consultas.sql` | Las 10 consultas del equipo, sin comentarios y separadas por `GO` |
+| `03_pruebas.sql` | Prueba la función, las vistas, los procedimientos, los triggers (puntaje de 1 a 5, no anterior a la calibración, una por cliente, asignación de la calibración más próxima), los errores y los permisos de cada rol, sin dejar datos. Al final genera la copia de seguridad y verifica que se pueda restaurar |
 
-El detalle del orden de ejecución y de los datos está en [queries/README.md](queries/README.md).
+Fuera de `queries/` están `explicacion_consultas.txt` (qué datos muestra cada consulta, para qué sirve y un ejemplo de resultado), el informe del trabajo (`informe/`, con los diagramas) y los materiales de la propuesta y la presentación (`propuesta/`).
 
-Fuera de `queries/` están el informe del trabajo (`informe/`, con el DER) y los materiales de la propuesta y la presentación (`propuesta/`).
-
-**Importante:** `Cafetear_completo.sql` es un archivo fijo que repite lo que hay en las carpetas. Si cambiás un script de una carpeta (por ejemplo un trigger), hacé el mismo cambio en el instalador. Está guardado en UTF-16, que es el formato que SSMS y `sqlcmd` leen bien con los acentos; GitHub no los muestra como texto, así que conviene descargarlo o abrirlo en SSMS y guardarlo con la misma codificación.
+**Importante:** `01_instalador.sql` y `03_pruebas.sql` están guardados en UTF-16, que es el formato que SSMS y `sqlcmd` leen bien con los acentos; GitHub no los muestra como texto, así que conviene descargarlos o abrirlos en SSMS y guardarlos con la misma codificación.
 
 ## Procedimientos y reglas del negocio
 
@@ -73,5 +64,5 @@ El resto lo resuelve la propia tabla, con mensajes de SQL Server: tipos de dato,
 |---|---|
 | `Invalid object name 'Lote'` al ejecutar una consulta | Estás en otra base (por ejemplo `master`). Elegí `cafetear` en el selector o ejecutá `USE cafetear;` |
 | Los acentos se ven mal, o la verificación dice que no se cargaron bien | Abriste el instalador y lo guardaste con otra codificación. Volvé a bajarlo y guardalo como Unicode (UTF-16) |
-| Algún control de la verificación dice `ERROR` | La base tiene datos u objetos de otra versión. Borrá la base `cafetear` y volvé a ejecutar `Cafetear_completo.sql` |
+| Algún control de la verificación dice `ERROR` | La base tiene datos u objetos de otra versión. Borrá la base `cafetear` y volvé a ejecutar `01_instalador.sql` |
 | Los nombres de los días salen en español | Es normal en un servidor en español. Solo cambia el idioma, no los resultados |

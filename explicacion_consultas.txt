@@ -1,8 +1,8 @@
 CONSULTAS DE CAFETEAR - QUÉ MUESTRA CADA UNA
 ============================================================
-Las consultas están en Queries.sql, sin comentarios, separadas por una línea con su número (la misma numeración que acá).
+Las consultas están en queries/02_consultas.sql, sin comentarios, separadas por GO y en el mismo orden que la numeración de acá.
 Para cada una: la pregunta (comentario original), qué data muestra, para qué sirve y un ejemplo real de resultado.
-Los resultados de ejemplo salen de la base cargada con Cafetear_completo.sql. Las consultas 6 y 8 dependen de la fecha de hoy.
+Los resultados de ejemplo salen de la base cargada con queries/01_instalador.sql. Las consultas 6 y 8 dependen de la fecha de hoy.
 
 ------------------------------------------------------------
 CONSULTA 1: Lotes de café que dejan mal parada la calidad.
@@ -70,7 +70,7 @@ CONSULTA 4: La mejor receta (calibración) de cada grano según cada proveedor.
 Comentario original:
   4) Para cada grano y proveedor, la calibración con mayor calificación promedio.
   Se exigen al menos 3 calificaciones; si hay empate gana la que tiene más calificaciones y, si siguen
-  empatadas, la más antigua. Usa la vista vwPuntajePorCalibracion (queries/vistas/vistas.sql).
+  empatadas, la más antigua. Usa la vista vwPuntajePorCalibracion (queries/01_instalador.sql).
 
 Qué muestra:
   Una sola fila por grano y proveedor: la calibración ganadora. Trae su dosis (gramos de café molido), tiempoExtraccion (segundos), rendimiento (gramos en la taza), puntajePromedio y la cantidad de calificaciones. Se exigen al menos 3 calificaciones; si hay empate gana la que tiene más calificaciones y, si siguen empatadas, la más antigua. Usa la vista vwPuntajePorCalibracion.
